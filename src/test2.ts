@@ -15,11 +15,12 @@ function Inject(key: string) {
 }
 
 @Injectable('C')
-export class C {
+class C {
   @Prop prop: number;
 }
 
 @Injectable('D')
-export class D {
+class D {
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   constructor(@Inject('C') c: C) {}
 }

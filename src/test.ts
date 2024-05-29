@@ -48,7 +48,7 @@ function Param(target: Object, propertyKey: string, index: number) {
 
 @Logger()
 @Component(1)
-export class User {
+class User {
   @Prop id: number;
 
   @Method

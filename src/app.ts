@@ -2,10 +2,11 @@ import { inject, injectable } from 'inversify';
 import { ILogger } from './logger/logger.interface';
 import express, { Express } from 'express';
 import { Server } from 'http';
-import { UserController } from './users/users.controller';
+import { UserController } from './user/user.controller';
 import { ExceptionFilter } from './errors/exception.filter';
 import 'reflect-metadata';
 import { TYPES } from './types';
+import { json } from 'body-parser';
 
 @injectable()
 export class App {
@@ -22,15 +23,20 @@ export class App {
     this.port = 8000;
   }
 
-  useRoutes() {
+  useMiddleware(): void {
+    this.app.use(json());
+  }
+
+  useRoutes(): void {
     this.app.use('/users', this.userController.router);
   }
 
-  useExceptionFilters() {
+  useExceptionFilters(): void {
     this.app.use(this.exceptionFilter.catch.bind(this.exceptionFilter));
   }
 
-  public async init() {
+  public async init(): Promise<void> {
+    this.useMiddleware();
     this.useRoutes();
     this.useExceptionFilters();
     this.server = this.app.listen(this.port);
