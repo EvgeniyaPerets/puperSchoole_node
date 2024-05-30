@@ -1,7 +1,7 @@
 import { Response, Router } from 'express';
 import { injectable } from 'inversify';
 import { ILogger } from '../logger/logger.interface';
-import { IControllerRoute } from './router.interface';
+import { ExpressReturnType, IControllerRoute } from './router.interface';
 export { Router } from 'express';
 import 'reflect-metadata';
 
@@ -13,28 +13,30 @@ export abstract class BaseController {
     this._router = Router();
   }
 
-  get router() {
+  get router(): Router {
     return this._router;
   }
 
-  public send<T>(res: Response, code: number, message: T) {
+  public send<T>(res: Response, code: number, message: T): ExpressReturnType {
     res.type('application/json');
     return res.status(code).json(message);
   }
 
-  public ok<T>(res: Response, message: T) {
+  public ok<T>(res: Response, message: T): ExpressReturnType {
     return this.send(res, 200, message);
   }
 
-  public create(res: Response) {
+  public create(res: Response): ExpressReturnType {
     return res.sendStatus(201);
   }
 
-  protected bindRouters(routes: IControllerRoute[]) {
+  protected bindRouters(routes: IControllerRoute[]): void {
     for (const route of routes) {
       this.logger.log(`[${route.method}] ${route.path}`);
+      const middleware = route.middleware?.map((m) => m.execute.bind(m));
       const handler = route.func.bind(this);
-      this.router[route.method](route.path, handler);
+      const pipeline = middleware ? [...middleware, handler] : handler;
+      this.router[route.method](route.path, pipeline);
     }
   }
 }

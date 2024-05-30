@@ -1,3 +1,4 @@
+import { ValidateMiddleware } from './../common/validate.middleware';
 import { UserLoginDto } from './dto/user-login.dto';
 import { UserRegisterDto } from './dto/user-register.dto';
 import { HTTPError } from '../errors/http-error.class';
@@ -18,7 +19,12 @@ export class UserController extends BaseController implements IUserController {
   ) {
     super(loggerService);
     this.bindRouters([
-      { path: '/register', method: 'post', func: this.register },
+      {
+        path: '/register',
+        method: 'post',
+        func: this.register,
+        middleware: [new ValidateMiddleware(UserRegisterDto)],
+      },
       { path: '/login', method: 'post', func: this.login },
     ]);
   }
