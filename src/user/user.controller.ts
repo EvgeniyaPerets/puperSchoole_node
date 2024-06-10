@@ -43,6 +43,6 @@ export class UserController extends BaseController implements IUserController {
       return next(new HTTPError(422, 'такой пользователь уже сущ'));
     }
 
-    this.ok(res, { email: result.email, name: result.name });
+    this.ok(res, { email: result.email, name: result.name, id: result.id });
   }
 }
