@@ -15,6 +15,7 @@ export class UserService implements IUserService {
     @inject(TYPES.UserRepository) private userRepository: IUserRepository,
     @inject(TYPES.ConfigService) private configService: IConfigService,
   ) {}
+
   async createUser({ email, name, password }: UserRegisterDto): Promise<UserModel | null> {
     const user = new User(email, name);
     const salt = this.configService.get('SALT');
@@ -34,5 +35,9 @@ export class UserService implements IUserService {
 
     const user = new User(existedUser.email, existedUser.name, existedUser.password);
     return user.comparePassword(password);
+  }
+
+  async getUserInfo(email: string): Promise<UserModel | null> {
+    return this.userRepository.find(email);
   }
 }
